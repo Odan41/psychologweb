@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Psycholog | Individuální terapie</title>
+  <style>
+    :root {
+      /* Barvy odvozené z loga */
+      --bg-main: #f6efe6;      /* teplá béžová */
+      --bg-light: #ffffff;
+      --text-main: #1f1f1f;    /* téměř černá */
+      --text-muted: #555;
+      --accent: #2f3e34;      /* tmavá zelená */
+      --accent-soft: #9fb3a6; /* jemná zelená */
+      --nav-height: 68px; /* výška fixní navigace */
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.7;
+      padding-top: var(--nav-height); /* zabrání překrytí obsahu navigací */
+    }
+
+    header {
+      background: var(--bg-light);
+      padding: 2.5rem 1.5rem;
+      border-bottom: 1px solid #e5e0d8;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .logo {
+      max-width: 140px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      line-height: 1.2;
+      margin: 0 0 1rem 0;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 1.6rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #1f2a23;
+    }
+
+    section {
+      padding: 4rem 0;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      background: var(--bg-light);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    /* styl pro vložené mapy v kartách */
+    .card iframe {
+      width: 100%;
+      height: 220px;
+      border: 0;
+      border-radius: 12px;
+      display: block;
+    }
+
+    /* jednoduché ikony v kartách místo obrázku */
+    .card .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, rgba(159,179,166,0.12), rgba(233,240,233,0.8));
+      margin-bottom: 1rem;
+      box-shadow: 0 6px 18px rgba(31,31,31,0.04);
+    }
+    @media (max-width: 480px) {
+      .card .card-icon { width: 44px; height: 44px; font-size:1.2rem; }
+    }
+
+    /* formulář v kartě - základní vzhled */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 0.65rem;
+      border-radius: 10px;
+      border: 1px solid #e9e6e2;
+      font: inherit;
+      resize: vertical;
+    }
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      outline: 2px solid var(--accent-soft);
+      border-color: var(--accent-soft);
+    }
+    .contact-form .btn { align-self: flex-start; }
+
+    /* sekce s akordeonem — chat bubliny */
+    .accordion .card { padding: 1rem; border-radius: 14px; }
+    .accordion .toggle {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      padding: 0.35rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .accordion .toggle:focus { outline: 3px solid rgba(159,179,166,0.15); border-radius: 8px; }
+
+    .accordion .panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 260ms cubic-bezier(.2,.9,.2,1), opacity 200ms ease;
+      opacity: 0;
+      padding: 0;
+    }
+    .accordion .card.open .panel { opacity: 1; padding-top: 0.5rem; }
+
+    .chat-bubble {
+      display: inline-block;
+      background: var(--bg-light);
+      color: var(--text-main);
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(31,31,31,0.06);
+      max-width: 70ch;
+      line-height: 1.5;
+    }
+
+    .accordion .toggle .arrow { font-size: 0.9rem; color: var(--accent); transition: transform 200ms ease; }
+    .accordion .card.open .arrow { transform: rotate(180deg); }
+
+    /* umožnit absolutní pozici pro tlačítko otazníku */
+    .card { position: relative; }
+
+    /* malé info tlačítko v kartách terapie */
+    .card .info-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 0;
+      background: var(--bg-main);
+      color: var(--accent);
+      font-weight: 700;
+      display: inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(31,31,31,0.06);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+    .card .info-btn:hover, .card .info-btn:focus { transform: translateY(-1px); outline: 2px solid rgba(159,179,166,0.12); }
+
+    /* modální okno s detailem terapie */
+    .modal { display: none; position: fixed; inset: 0; z-index: 10050; align-items: center; justify-content: center; padding: 1.25rem; }
+    .modal.open { display: flex; }
+    .modal .modal-overlay { position: absolute; inset:0; background: rgba(31,31,31,0.45); }
+    .modal .modal-panel {
+      position: relative;
+      background: var(--bg-light);
+      padding: 1.25rem;
+      border-radius: 12px;
+      box-shadow: 0 18px 40px rgba(31,31,31,0.12);
+      max-width: 720px;
+      width: 100%;
+      /* necháme panel ve viewportu a umožníme scroll v těle */
+      max-height: calc(100vh - 4rem);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal .modal-close { position: absolute; top: 10px; right: 10px; border:0; background: transparent; font-size: 1.1rem; color: var(--text-muted); cursor:pointer; }
+    .modal .modal-body { margin-top: 0.6rem; overflow: auto; -webkit-overflow-scrolling: touch; max-height: calc(100vh - 8rem); }
+    .modal .modal-body .chat-bubble { display: block; max-width: none; }
+
+    @media (max-width: 520px) {
+      .card .info-btn { top: 8px; right: 8px; width: 30px; height: 30px; }
+      .modal .modal-panel { padding: 1rem; max-height: calc(100vh - 2rem); }
+      .modal .modal-body { max-height: calc(100vh - 6rem); }
+    }
+
+    /* rozšířená karta (např. formulář) přes dvě kolony na větších obrazovkách */
+    @media (min-width: 720px) {
+      .card-grid .card--wide { grid-column: span 2; }
+    }
+
+    .photo-placeholder {
+      background: linear-gradient(135deg, #e6ded3, #f5efe8);
+      border-radius: 24px;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    /* profilová fotka v sekci 'O mně' - kulatá, vpravo, text obtéká */
+    .profile-photo {
+      float: right;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 0 1rem 1rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      shape-outside: circle(50%);
+      -webkit-shape-outside: circle(50%);
+    }
+    @media (max-width: 720px) {
+      .profile-photo {
+        float: none;
+        display: block;
+        margin: 0 auto 1rem auto;
+      }
+    }
+
+    footer {
+      background: var(--accent);
+      color: #fff;
+      padding: 3rem 0;
+    }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      display: flex;
+      gap: 10px;
+      padding-inline: 1rem;
+      align-items: center;
+      margin: 0;
+      width: 100%;
+      background: var(--bg-light);
+      transition: transform 260ms cubic-bezier(.2,.9,.2,1), box-shadow 200ms ease;
+      transform: translateY(0);
+      z-index: 9999;
+    }
+
+    /* skrytá navigace - posun nahoru mimo obrazovku */
+    .nav.nav-hidden {
+      transform: translateY(-100%);
+    }
+
+    /* jemný stín když je viditelná po scrollu nahoru */
+    .nav.nav--shadow {
+      box-shadow: 0 6px 18px rgba(31, 31, 31, 0.08);
+    }
+    .nav-logo{
+      background-image: url('images/logo_pruhledne.png');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: left center;
+      width: 170px; /* zvětšená šířka */
+      height: 2.6rem; /* zvětšená výška */
+      /* optionally change to 'auto' height if you want exact proportions */
+      transition: transform 120ms ease;
+    }
+
+    .nav-inner{
+      display: inline-flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+    .nav-links{
+      display: inline-flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      list-style-type: none;
+      margin-block: 0;
+    }
+
+    .nav-links li a{
+      text-decoration: none;
+      padding: 1rem;
+      color: var(--text-main);
+      display: inline-block;
+      transition: transform 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-links li a:hover,
+    .nav-links li a:focus{
+      transform: scale(1.06);
+    }
+
+    /* telefon v kartě kontaktu - černý, tučný, mírné zvětšení při hover */
+    .card .phone-link {
+      color: var(--text-main);
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.12s ease, color 0.12s ease;
+    }
+    .card .phone-link:hover,
+    .card .phone-link:focus {
+      transform: scale(1.06);
+      color: var(--text-main);
+    }
+
+    /* e‑mail v kartě kontaktu - stejný vzhled jako telefon */
+    .card .email-link {
+      color: var(--text-main);
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.12s ease, color 0.12s ease;
+    }
+    .card .email-link:hover,
+    .card .email-link:focus {
+      transform: scale(1.06);
+      color: var(--text-main);
+    }
+
+    /* rozložení kontaktních údajů - vedle sebe pokud je místo, jinak zalomit */
+    .card .contact-details {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+    .card .contact-item {
+      flex: 1 1 180px; /* roste, základ 180px, zabalí se pokud se nevejde */
+      min-width: 140px;
+    }
+    .card .contact-label {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .card .contact-value { margin: 0; }
+
+    /* odkaz na praxe a kurzy v sekci 'O mně' */
+    .cv-link {
+      background: transparent;
+      border: 0;
+      color: var(--accent);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+      font-size: 1rem;
+    }
+    .cv-link strong {
+      display: inline-block;
+      transition: transform 140ms ease, color 120ms ease;
+    }
+    .cv-link:hover strong,
+    .cv-link:focus strong {
+      transform: scale(1.06);
+    }
+    .cv-link:focus { outline: 3px solid rgba(159,179,166,0.16); border-radius: 6px; }
+
+    @media (max-width: 480px) {
+      .card .contact-item { flex-basis: 100%; min-width: 0; }
+    }
+
+    /* Ceník — moderní tabulka */
+    .pricing-table {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(31,31,31,0.04);
+      box-shadow: 0 10px 28px rgba(31,31,31,0.05);
+      background: linear-gradient(180deg, #ffffff, #fbfbfb);
+      margin-top: 1rem;
+    }
+    .pricing-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+    .pricing-row + .pricing-row { border-top: 1px solid rgba(31,31,31,0.03); }
+    .pricing-row:hover { background: rgba(159,179,166,0.03); transform: translateY(-4px); }
+
+    .pricing-title { font-weight: 700; font-size: 1rem; }
+    .pricing-duration { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.15rem; }
+    .pricing-amount { font-weight: 700; color: var(--accent); font-size: 1.02rem; min-width: 92px; text-align: right; }
+
+    @media (max-width: 520px) {
+      .pricing-row { grid-template-columns: 1fr; }
+      .pricing-amount { text-align: left; margin-top: 0.5rem; }
+      .pricing-row:hover { transform: none; }
+    }
+
+    /* Poznámka k ceníku - storno, platební podmínky apod. */
+    .pricing-note { text-align: center; color: var(--text-muted); font-size: 0.88rem; margin-top: 0.6rem; max-width: 720px; margin-left: auto; margin-right: auto; }
+
+    footer p {
+      color: #eaeaea;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="nav-logo"></div>
+    <ul class="nav-links">
+      <li><a href="#o-mne">O mně</a></li>
+      <li><a href="#terapie">Formy terapie</a></li>
+      <li><a href="#prubeh">Průběh</a></li>
+      <li><a href="#cenik">Ceník</a></li>
+      <li><a href="#kontakt" class="nav-btn">Objednat se</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header>
+  <div class="container hero">
+    <div>
+      <!-- LOGO -->
+      <img src="images/logo_pruhledne.png" alt="Logo psychologa" class="logo" />
+
+      <h1>Mgr. Lenka Zítková</h1>
+      <p>
+        Psycholožka ve zdravotnictví, frekventantka výcviku v kognitivně-behaviorální terapii, klinická hypnoterapeutka 
+        Nabízím psychologické poradenství a terapii pro dospívající a dospělé, kteří nechtějí být na své cestě sami. 
+
+      </p>
+      <a href="#kontakt" class="btn">Objednat se</a>
+    </div>
+
+    <!-- HLAVNÍ FOTOGRAFIE -->
+    <img src="images/lenka.jpg" alt="Klinická psycholožka v klidném terapeutickém prostředí" class="photo-placeholder" style="object-fit:cover;width:100%;" />
+  </div>
+</header>
+
+<section id="o-mne">
+  <div class="container">
+    <h2>O mně</h2>
+    <img src="images/profil.png" alt="Profilová fotka Mgr. Lenka Zítková" class="profile-photo" />
+    <p>
+      O psychologii jsem se zajímala již od střední školy. Od počátku pro mě nebyla pouze oborem, ale především cestou k lidským příběhům – k porozumění tomu, co lidé prožívají, a k možnosti být jim průvodcem v náročných obdobích jejich života.
+    </p>
+    <p>
+      Jsem psycholožka a ve své práci se snažím propojovat evidence-based přístup s lidskostí, respektem a vytvářením bezpečného prostoru pro sdílení. Pracuji s jednotlivci všech věkových skupin, a to i v online formě. Nejčastěji se setkávám s tématy úzkostí, depresivních obtíží, vztahových problémů, zvládání stresu, syndromu vyhoření a traumatických zkušeností; obrátit se na mě lze i s jinými obtížemi.
+    </p>
+    <p>
+Mým hlavním terapeutickým směrem je kognitivně-behaviorální terapie (KBT), kterou dle potřeb a preferencí klienta doplňuji o metody EMDR a klinické hypnózy. Terapii nevnímám jako univerzální postup, ale jako společnou cestu – snažím se ji přizpůsobovat konkrétnímu člověku, jeho obtížím i možnostem, s respektem k jeho jedinečnému životnímu příběhu.
+    </p>
+    <p>
+      Je pro mě důležité, aby se klienti cítili pochopeně a v bezpečí, a zároveň nacházeli motivaci ke změně, osobnímu růstu i uvědomění vlastní možnosti ovlivňovat svůj život. Pracuji v souladu s etickými zásadami, zachovávám mlčenlivost. Své odborné dovednosti dále rozvíjím prostřednictvím supervize, dalšího vzdělávání a účasti na odborných přednáškách.
+    </p>
+
+    <p>
+      <button class="cv-link" type="button" data-title="Praxe a kurzy" data-template="tmpl-cv" aria-haspopup="dialog" aria-expanded="false"><strong>Prohlédnout si praxe a vzdělání</strong></button>
+    </p>
+  </div>
+</section>
+
+
+<section style="background:#fdfbf8" id="terapie">
+  <div class="container">
+    <h2>Formy terapie</h2>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon" role="img" aria-label="KBT terapie">🧠</div>
+        <h3>KBT terapie</h3>
+        <button class="info-btn" type="button" aria-label="Více o KBT" data-title="KBT terapie" data-template="tmpl-kbt"
+>?</button>
+        <p>Praktický a strukturovaný přístup zaměřený na změnu myšlení a chování; pomáhá zvládat široké spektrum obtíží a dává konkrétní nástroje do běžného života.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" role="img" aria-label="EMDR terapie">👁️</div>
+        <h3>EMDR terapie</h3>
+        <button class="info-btn" type="button" aria-label="Více o EMDR" data-title="EMDR terapie" data-template="tmpl-emdr">?</button>
+        <p>Evidence‑based metoda pro zpracování traumat; pomáhá snížit intenzitu nepříjemných vzpomínek a jejich emoční náboj.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" role="img" aria-label="Klinická hypnóza">🌀</div>
+        <h3>Klinická hypnóza</h3>
+        <button class="info-btn" type="button" aria-label="Více o hypnóze" data-title="Klinická hypnóza" data-template="tmpl-hypno">?</button>
+        <p>Práce v bezpečném, relaxačním stavu; zaměřená na uvolnění, práci s emocemi, návyky a tělesným napětím.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" role="img" aria-label="Krizová intervence">⚠️</div>
+        <h3>Krizová intervence</h3>
+        <button class="info-btn" type="button" aria-label="Více o krizové intervenci" data-title="Krizová intervence" data-template="tmpl-crisis">?</button>
+        <p>Krátkodobá podpora zaměřená na stabilizaci, zklidnění a konkrétní kroky v akutních životních situacích.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" role="img" aria-label="Terapie v přírodě">🌲</div>
+        <h3>Terapie v přírodě</h3>
+        <button class="info-btn" type="button" aria-label="Více o terapii v přírodě" data-title="Terapie v přírodě" data-template="tmpl-nature">?</button>
+        <p>Terapie probíhající v přírodním prostředí – pomáhá s ukotvením, snížením napětí a získáním nového nadhledu.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="prubeh">
+  <div class="container">
+    <h2>Jak terapie probíhá</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>1. Objednání</h3>
+        <p>Objednat se můžete prostřednictvím online objednávkového systému nebo e-mailem, kde krátce popište, co Vás trápí a proč do terapie chcete vstoupit. Pokud si nejste jistí, zda je terapie pro vás vhodná, můžete mě před objednáním kontaktovat s dotazem.</p>
+      </div>
+      <div class="card">
+        <h3>2. První sezení</h3>
+        <p>První setkání slouží především k vzájemnému seznámení a k porozumění tomu, s čím do terapie přicházíte. Úvodní sezení se liší od sezení návazných. Společně se seznámíme, probereme vaše aktuální obtíže, očekávání a cíle terapie. </p>
+      </div>
+      <div class="card">
+        <h3>3. Další průběh terapie</h3>
+        <p>V dalších sezeních se zaměřujeme na konkrétní témata, která jsou pro vás důležitá. Někdy se  terapeutické cíle objeví hned na začátku, jindy se o nich bavíme více sezení. Pokud přemýšlíte nad tím, že konkrétní cíle nemáte, nemusíte se bát, vše stanovíme společně. </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="prubeh-faq" style="background:#faf8f4">
+  <div class="container">
+    <h2>Jak terapie probíhá — časté otázky</h2>
+    <div class="card-grid accordion">
+      <div class="card">
+        <button class="toggle" aria-expanded="false">
+          <span>Délka a frekvence sezení?</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="panel">
+          <div class="chat-bubble">Jedno sezení obvykle trvá 50 minut, u EMDR se počítá s časem 90 minut. Frekvence setkávání bývá nejčastěji jednou týdně nebo jednou za 14 dní, podle domluvy a charakteru obtíží.</div>
+        </div>
+      </div>
+      <div class="card">
+        <button class="toggle" aria-expanded="false">
+          <span>Jaké jsou používané přístupy?</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="panel">
+          <div class="chat-bubble">Mým základním terapeutickým směrem je kognitivně-behaviorální terapie (KBT), avšak kombinuji ho i s dalšími terapeutickými směry. V případě potřeby lze terapii doplnit o další metody, například EMDR nebo klinickou hypnózu. Volba přístupu vždy vychází ze společné domluvy a z toho, co je pro vás v dané chvíli nejvhodnější.</div>
+        </div>
+      </div>
+      <div class="card">
+        <button class="toggle" aria-expanded="false">
+          <span>Je terapie důvěrná a bezpečná?</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="panel">
+          <div class="chat-bubble">Ano, dodržuji etické zásady a mlčenlivost; vše, co na sezení probíráme, zůstává mezi námi, pokud neexistuje zákonná povinnost oznámit riziko.</div>
+        </div>
+      </div>
+      <div class="card">
+        <button class="toggle" aria-expanded="false">
+          <span>Je možná Online terapie?</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="panel">
+          <div class="chat-bubble">Ano, Online terapie probíhá formou zabezpečeného videohovoru a je plnohodnotnou alternativou osobního setkání. Je vhodná zejména v situacích, kdy není možné docházet osobně nebo pokud vám tento způsob kontaktu více vyhovuje.</div>
+        </div>
+      </div>
+      <div class="card">
+        <button class="toggle" aria-expanded="false">
+          <span>Komu můžu pomoci?</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="panel">
+          <div class="chat-bubble">Pracuji s dospívajícími (od 15 let), dospělými a seniory</div>
+        </div>
+      </div>
+      <div class="card">
+        <button class="toggle" aria-expanded="false">
+          <span>S čím Vám mohu pomoci?</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="panel">
+          <div class="chat-bubble">Úzkostné symptomy,
+Depresivní symptomy,
+Zvládání stresu,
+OCD,
+Syndrom vyhoření,
+Traumatické zkušenosti,
+Vztahová problematika,
+Problémy se spánkem,
+Životní krize,
+Nízká sebedůvěra,
+Fobie (klaustrofobie, agorafobie, sociální fobie),
+Panické ataky,
+a další…
+</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<section style="background:#fdfbf8" id="cenik">
+  <div class="container">
+    <h2>Ceník</h2>
+
+    <div class="pricing-table" role="table" aria-label="Ceník služeb">
+      <div class="pricing-row" role="row">
+        <div>
+          <div class="pricing-title">Individuální online konzultace</div>
+          <div class="pricing-duration">50 minut</div>
+        </div>
+        <div class="pricing-amount" role="cell">1 000 Kč</div>
+      </div>
+
+      <div class="pricing-row" role="row">
+        <div>
+          <div class="pricing-title">Individuální Online konzultace</div>
+          <div class="pricing-duration">90 minut</div>
+        </div>
+        <div class="pricing-amount" role="cell">1 500 Kč</div>
+      </div>
+
+      <div class="pricing-row" role="row">
+        <div>
+          <div class="pricing-title">Individuální Online konzultace - víkend</div>
+          
+        </div>
+        <div class="pricing-amount" role="cell">+ 30%</div>
+      </div>
+      <div class="pricing-row" role="row">
+        <div>
+          <div class="pricing-title">Terapie v přírodě</div>
+          <div class="pricing-duration">90 minut</div>
+        </div>
+        <div class="pricing-amount" role="cell">1 600 Kč</div>
+      </div>
+<div class="pricing-row" role="row">
+        <div>
+          <div class="pricing-title">Vypracování zprávy z terapie</div>
+        </div>
+        <div class="pricing-amount" role="cell">400 Kč</div>
+      </div>
+    </div>
+    <p class="pricing-note" style="margin-top: 2rem;" role="note">Poskytované služby nejsou hrazeny ze zdravotního pojištění.</p>
+<p class="pricing-note" role="note">
+Platba za sezení probíhá předem, nejpozději 24 hodin před domluveným termínem. Při zrušení sezení méně než 24 hodin předem je účtována plná cena sezení. Platební údaje jsou zasílány e-mailem po potvrzení termínu. Děkuji za respektování těchto podmínek, které umožňují plynulé fungování praxe.
+</p>
+  </div>
+</section>
+
+<section id="kontakt">
+  <div class="container">
+    <h2>Kontakt</h2>
+    <p>Pokud máte zájem o spolupráci nebo se chcete objednat, neváhejte mě kontaktovat.</p>
+    <div class="card-grid">
+      <div class="card">
+        <h3>📍 Adresa</h3>
+        <iframe src="https://www.google.com/maps?q=Zl%C3%ADn&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa Zlín"></iframe>
+        
+<div class="contact-details">
+  <div class="contact-item">
+    <div class="contact-label">👤 Jméno</div>
+    <p class="contact-value">Mgr. Lenka Zítková</p>
+    <p class="contact-value">IČO: 17840392</p>
+  </div>
+  <div class="contact-item">
+    <div class="contact-label">✉️ E‑mail</div>
+    <p class="contact-value"><a class="email-link" href="mailto:zitkova.le@gmail.com">zitkova.le@gmail.com</a></p>
+  </div>
+  <div class="contact-item">
+    <div class="contact-label">📞 Telefon</div>
+    <p class="contact-value"><a class="phone-link" href="tel:+420607073067">+420 607 073 067</a></p>
+  </div>
+</div>
+      </div>
+
+      <div class="card">
+        <h3>✉️ E‑mail</h3>
+        <form id="contactForm" class="contact-form" onsubmit="return sendMail(event)" novalidate>
+          <label>
+            <span style="display:block;font-size:0.9rem;margin-bottom:0.35rem;color:var(--text-muted)">Váš e‑mail</span>
+            <input type="email" name="from" required placeholder="vaše@email.cz" />
+          </label>
+          <label>
+            <span style="display:block;font-size:0.9rem;margin-bottom:0.35rem;color:var(--text-muted)">Předmět</span>
+            <input type="text" name="subject" required placeholder="Předmět zprávy" />
+          </label>
+          <label>
+            <span style="display:block;font-size:0.9rem;margin-bottom:0.35rem;color:var(--text-muted)">Zpráva</span>
+            <textarea name="body" rows="5" required placeholder="Napište zprávu..."></textarea>
+          </label>
+          <button type="submit" class="btn">Odeslat</button>
+          <div class="form-msg" aria-live="polite" style="margin-top:0.5rem;font-size:0.95rem;color:var(--text-muted);"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2025 Všechna práva vyhrazena</p><p> Mgr. Lenka Zítková, psycholožka ve zdravotnictví</p>
+    <p>
+Provozuji odborné psychologické služby jako fyzická osoba podnikající na základě živnostenského oprávnění, v souladu s občanským zákoníkem.
+</p>
+  </div>
+</footer>
+
+<!-- Šablony s detailními popisy terapií (skryté) -->
+<template id="tmpl-kbt">
+  <p>Kognitivně-behaviorální terapie (KBT) je psychoterapeutický směr, který pomáhá lidem lépe porozumět tomu, <strong>jak jejich myšlenky, emoce a chování vzájemně souvisejí</strong>. KBT vychází z přesvědčení, že to není samotná situace, která určuje, jak se cítíme, ale <strong>způsob, jakým si ji vykládáme</strong>. Když se naučíme pracovat s tímto “vnitřním komentářem”, můžeme začít měnit i své prožívání a reakce. KBT je účinná u široké škály potíží. Terapeut a klient tu fungují jako tým, společně hledají další strategie, jak životní těžkosti zvládat.</p>
+  <h4>Jak KBT probíhá?</h4>
+  <p>KBT je strukturovaná, praktická a zaměřená na řešení konkrétních potíží.</p>
+  <p>Terapii obvykle tvoří:</p>
+  <ul>
+    <li><strong>mapování potíží</strong> a vysvětlení, co je udržuje</li>
+    <li><strong>stanovení cílů</strong>, na kterých chcete pracovat</li>
+    <li><strong>praktická cvičení</strong>, která pomáhají měnit zažité vzorce</li>
+    <li><strong>krátké domácí úkoly</strong>, které zajišťují, že změny se promítnou do běžného života</li>
+    <li><strong>průběžné vyhodnocování</strong>, zda společná práce funguje</li>
+  </ul>
+
+  <h4>V čem se KBT liší od jiných terapií?</h4>
+  <ul>
+    <li><strong>je praktická a přehledná</strong>, s jasnými kroky a cíli</li>
+    <li><strong>soustředí se na současné potíže</strong>, ale s ohledem na to, co je v minulosti formovalo</li>
+    <li><strong>nabízí konkrétní nástroje</strong>, které si klient může postupně osvojit a používat samostatně</li>
+    <li><strong>klade důraz na aktivní zapojení</strong> klienta i mimo terapeutická sezení</li>
+  </ul>
+
+  <h4>Co si z KBT odnesete?</h4>
+  <p>Mnoho klientů po ukončení terapie říká, že získali:</p>
+  <ul>
+    <li>lepší porozumění tomu, <strong>proč</strong> reagují určitým způsobem,</li>
+    <li>dovednosti, jak <strong>uklidnit mysl i tělo</strong>,</li>
+    <li>větší jistotu v řešení náročných situací,</li>
+    <li>pocit kontroly a schopnost ovlivnit své prožívání,</li>
+    <li>konkrétní strategie, které mohou používat po celý život.</li>
+  </ul>
+</template>
+
+<template id="tmpl-emdr">
+  <p><strong>EMDR</strong> (Eye Movement Desensitization and Reprocessing) je <strong>evidence‑based psychoterapeutická metoda</strong>, která pomáhá zpracovat psychicky náročné nebo traumatické zážitky. Pracuje s přirozenou schopností mozku <strong>integrovat informace a hojit se</strong>, podobně jako tělo léčí fyzická zranění.</p>
+
+  <p>Když je zážitek příliš silný nebo nečekaný, může zůstat „zamrzlý“ v nervovém systému a vyvolávat nepříjemné reakce, jako jsou úzkosti, flashbacky, napětí, pocity ohrožení nebo silné emoce. EMDR pomáhá tento materiál bezpečně zpracovat a uložit tam, kam patří — <strong>do minulosti</strong>. Terapie EMDR je vědecky ověřená a doporučená mnohými mezinárodními organizacemi pro léčbu posttraumatické stresové poruchy (např. Světová zdravotnická organizace, 2013).</p>
+
+  <h4>Jak EMDR funguje?</h4>
+  <p>Terapie využívá tzv. <strong>bilaterální stimulaci</strong> — nejčastěji sledování pohybů terapeutovy ruky očima, někdy i zvukové či vibrační podněty střídající se mezi pravou a levou stranou těla. Během stimulace klient postupně prochází vzpomínkami, tělesnými pocity a myšlenkami, které se k tématu vážou. Mozek tak dostává možnost <strong>informace přerámovat a uklidnit</strong>. Proces <strong>nevyžaduje</strong>, aby klient detailně popisoval trauma; účelem není vyprávění, ale <strong>vnitřní zpracování</strong>.</p>
+
+  <h4>S čím EMDR pomáhá?</h4>
+  <ul>
+    <li>posttraumatické stresové poruchy (PTSD),</li>
+    <li>následky jednorázových i dlouhodobých traumat,</li>
+    <li>úzkosti, panické stavy,</li>
+    <li>psychosomatické potíže,</li>
+    <li>zážitky z dětství, které stále ovlivňují přítomnost,</li>
+    <li>komplikovaný smutek nebo šokové události.</li>
+  </ul>
+
+  <h4>Proč EMDR funguje?</h4>
+  <p>EMDR využívá to, co mozek umí přirozeně v REM spánku — zpracovávat zážitky. Bilaterální stimulace tento proces podporuje a umožňuje, aby bolestivá vzpomínka <strong>ztratila emoční náboj</strong>, ale zůstala jako běžná část životní historie.</p>
+
+  <h4>Co si klienti z EMDR odnášejí?</h4>
+  <ul>
+    <li>úlevu od intenzivních emocí,</li>
+    <li>lepší zvládání stresu,</li>
+    <li>pocit bezpečí a kontroly,</li>
+    <li>schopnost nahlížet na minulost s větším odstupem.</li>
+  </ul>
+</template>
+
+<template id="tmpl-hypno">
+  <p>Hypnoterapie je psychoterapeutická metoda, která využívá hypnotický stav k léčebným a terapeutickým účelům. Hypnóza je zde chápána jako změněný stav vědomí, ve kterém je pozornost selektivně zúžená — člověk se méně soustředí na vnější podněty a více na své vnitřní prožívání, představy a tělesné pocity. V tomto stavu může být mysl otevřenější terapeutické práci, změně zažitých vzorců a zpracování obtížných emocí. Klient přitom neztrácí kontrolu, zůstává po celou dobu při vědomí a může kdykoliv proces přerušit.</p>
+
+  <p>Hypnoterapie pracuje se stavem zvýšené sugestibility, který umožňuje jemnější a přímější přístup k emočním a tělesným reakcím, jež se v běžném stavu vědomí někdy udržují automaticky a mimo vědomou kontrolu.</p>
+
+  <p>Podstatnou součástí hypnotického procesu je relaxace, která podporuje zklidnění nervového systému a vytváří prostor pro terapeutickou změnu. Hypnóza se vždy odehrává v rámci terapeutického vztahu, založeného na důvěře, bezpečí a spolupráci.</p>
+
+  <h4>S čím může hypnoterapie pomoci?</h4>
+  <p>Hypnoterapie může být užitečná zejména při:</p>
+  <ul>
+    <li>úzkostech a chronickém stresu,</li>
+    <li>psychosomatických obtížích,</li>
+    <li>poruchách spánku,</li>
+    <li>práci s emocemi (strach, napětí, stud, vina),</li>
+    <li>nízkém sebevědomí a vnitřním kritickém hlasu,</li>
+    <li>změně návyků a automatických reakcí,</li>
+    <li>tělesném napětí a přetrvávajících somatických potížích.</li>
+  </ul>
+
+  <p>Často se využívá jako součást širší psychoterapie, případně v kombinaci s dalšími metodami (např. KBT, práce s traumatem).</p>
+
+  <h4>Jak hypnoterapie probíhá?</h4>
+  <p>Hypnoterapie je vždy dobrovolná a probíhá pouze tehdy, pokud je pro klienta srozumitelná a dává mu smysl.</p>
+
+  <h4>Sezení obvykle zahrnuje:</h4>
+  <ul>
+    <li>úvodní rozhovor a vymezení terapeutického cíle,</li>
+    <li>navození hypnotického stavu,</li>
+    <li>terapeutickou práci s představami, emocemi nebo tělesným prožitkem,</li>
+    <li>postupný návrat do běžného stavu vědomí,</li>
+    <li>společné zpracování zkušenosti.</li>
+  </ul>
+
+  <h4>Co si klienti z hypnoterapie často odnášejí?</h4>
+  <ul>
+    <li>hlubší pocit klidu a uvolnění,</li>
+    <li>lepší kontakt s tělem a emocemi,</li>
+    <li>snížení vnitřního napětí,</li>
+    <li>nový pohled na zažité vzorce,</li>
+    <li>zkušenost, že změna může probíhat jemně a postupně.</li>
+  </ul>
+</template>
+
+<template id="tmpl-crisis">
+  <p>Krizová intervence je <strong>krátkodobá psychologická pomoc</strong> určená pro situace, kdy je člověk náhle zahlcen emocemi, stresem nebo životní událostí, kterou aktuálně nezvládá. Krize může přijít nečekaně – a není známkou slabosti. Je to signál, že je toho na vás v danou chvíli příliš. <strong>Cílem krizové intervence není „vyřešit celý život“, ale pomoci vám stabilizovat se, zorientovat se v situaci a zvládnout nejbližší období bezpečně.</strong></p>
+
+  <h4>Kdy může být krizová intervence vhodná?</h4>
+  <p>Krizová intervence může pomoci například při:</p>
+  <ul>
+    <li>náhlém zhoršení psychického stavu,</li>
+    <li>rozchodu, ztrátě, úmrtí blízkého,</li>
+    <li>akutním stresu, vyčerpání nebo kolapsu,</li>
+    <li>šokové či traumatické události,</li>
+    <li>pocitu, že „už toho je moc“,</li>
+    <li>myšlenkách na sebepoškození nebo bezvýchodnost (bezprostřední ohrožení vždy řešíme ve spolupráci s další pomocí).</li>
+  </ul>
+
+  <h4>Jak krizová intervence probíhá?</h4>
+  <p>Krizová intervence je <strong>praktická, podpůrná a zaměřená na přítomnost</strong>. Společně se soustředíme na to, co se děje teď a co vám může pomoci situaci zvládnout krok po kroku.</p>
+
+  <p>Součástí může být:</p>
+  <ul>
+    <li>bezpečné zastavení a zklidnění,</li>
+    <li>pojmenování toho, co se děje a proč je to tak náročné,</li>
+    <li>hledání okamžitých opor a zdrojů,</li>
+    <li>práce s emocemi a tělesným napětím,</li>
+    <li>vytvoření krátkého plánu pro nejbližší dny,</li>
+    <li>rozhodnutí, zda a jak pokračovat dál (např. navázání na terapii).</li>
+  </ul>
+
+  <h4>Co si můžete z krizové intervence odnést?</h4>
+  <ul>
+    <li>úlevu od akutního napětí,</li>
+    <li>pocit, že v tom nejste sami,</li>
+    <li>lepší orientaci v tom, co se děje,</li>
+    <li>konkrétní kroky, jak zvládnout nejbližší období,</li>
+    <li>naději, že situace je řešitelná – i když teď působí zahlcujícím dojmem.</li>
+  </ul>
+</template>
+
+<template id="tmpl-nature">
+  <p>Terapie v přírodě je forma psychologické práce, která probíhá <strong>venku – v přirozeném prostředí</strong>, například v parku, lese nebo klidné krajině. Spojuje terapeutický rozhovor s léčivým účinkem pohybu, čerstvého vzduchu a kontaktem s přírodou.</p>
+
+  <p>Příroda sama o sobě podporuje zklidnění nervového systému, snižuje napětí a pomáhá vytvářet odstup od zahlcujících myšlenek. Pro mnoho lidí je takové prostředí <strong>méně svazující než terapeutická místnost</strong> a umožňuje mluvit otevřeněji a přirozeněji.</p>
+
+  <h4>Pro koho může být terapie v přírodě vhodná?</h4>
+  <p>Terapie v přírodě může být dobrou volbou, pokud:</p>
+  <ul>
+    <li>se cítíte přetížení, vyčerpaní nebo „odpojení od sebe“,</li>
+    <li>je pro vás náročné dlouho sedět a mluvit v uzavřeném prostoru,</li>
+    <li>řešíte stres, úzkost, smutek nebo životní změny,</li>
+    <li>potřebujete zpomalit a znovu se nadechnout,</li>
+    <li>vám vyhovuje přemýšlet při chůzi,</li>
+    <li>hledáte jemnější a méně formální formu terapie.</li>
+  </ul>
+
+  <h4>Jak terapie v přírodě probíhá?</h4>
+  <p>Obvykle zahrnuje:</p>
+  <ul>
+    <li>krátké <strong>naladění a ukotvení</strong> na začátku,</li>
+    <li>terapeutický rozhovor během <strong>pomalé chůze nebo zastavení</strong>,</li>
+    <li>práci s tím, co se objevuje v myšlenkách, emocích i těle,</li>
+    <li>využití okolního prostředí jako podpory (např. metafory, všímavost),</li>
+    <li>závěrečné shrnutí a uzavření setkání.</li>
+  </ul>
+
+  <h4>Co si z ní můžete odnést?</h4>
+  <ul>
+    <li>pocit většího klidu a ukotvení,</li>
+    <li>snížení napětí v těle,</li>
+    <li>jasnější myšlenky a nadhled,</li>
+    <li>hlubší kontakt se sebou a svými potřebami,</li>
+    <li>zkušenost, že změna může vznikat jemně a postupně.</li>
+  </ul>
+</template>
+
+<template id="tmpl-cv">
+  <h4>Vzdělání</h4>
+  <p>Vystudovala jsem jednooborovou psychologii na Univerzitě Palackého v Olomouci. Aktuálně pracuji jako psycholog ve zdravotnictví a jsem zařazena ve specializačním vzdělávání v oboru klinická psychologie. Současně jsem frekventantkou výcviku v kognitivně‑behaviorální psychoterapii pod Mezinárodním institutem KBT Oddysea a výcviku v EMDR. Absolvovala jsem kurz v klinické hypnóze.</p>
+
+  <p>Podrobný přehled mého vzdělání, absolvovaných výcviků a kurzů je uveden níže.</p>
+
+  <h5>Studium</h5>
+  <ul>
+    <li>Univerzita Palackého v Olomouci, Filozofická fakulta — Psychologie, Bakalářský titul (2016–2019)</li>
+    <li>Univerzita Palackého v Olomouci, Filozofická fakulta — Psychologie, Magisterský titul (2019–2022)</li>
+    <li>Univerzita Hradec Králové, Filozofická fakulta — Historické vědy (specializace archivnictví), Bakalářský titul (2020–2024)</li>
+  </ul>
+
+  <h5>Specializační vzdělávání</h5>
+  <ul>
+    <li>Institut postgraduálního vzdělávání ve zdravotnictví — Klinická psychologie (09/2022 – dosud)</li>
+    <li>Institut postgraduálního vzdělávání ve zdravotnictví — Psychoterapie (09/2025 – dosud)</li>
+  </ul>
+
+  <h5>Akreditované kurzy a výcviky</h5>
+  <ul>
+    <li>Psychoterapeutický výcvik v kognitivně‑behaviorální terapii — Mezinárodní institut KBT Oddysea, 02/2023–dosud</li>
+    <li>Výcvik v metodě EMDR — Český institut pro psychotraumatologii a EMDR, z.s., 09/2025–dosud</li>
+    <li>Kroměřížský kurz hypnózy 2 — Česká psychiatrická společnost J.E. Purkyně, Vydáno 09/2025, ID pověření akreditace: AKP ČR/ZL/ŠA/004/2025</li>
+    <li>Certifikovaný kurz Wechslerovy škály — Institut klinické psychologie z.s. (vydání certifikátu připravuji)</li>
+    <li>Kurz Vývojová psychopatologie I–IV — Institut klinické psychologie z.s., Vydáno 10/2025 (certifikát v procesu)</li>
+    <li>Základní kurz v Rorschachově metodě — Mgr. Michal Pernička, Ph.D., Vydáno 10/2024, č.j. MZDR 1592/2021-5/ONP</li>
+    <li>Základní kurz V MDZT — PhDr. David Unger, Vydáno 06/2024, ID pověření akreditace: AKP/VČ/ŠA/005/2024</li>
+    <li>Hand test v klinické a poradenské praxi — Doc. PhDr. Martin Lečbých, Ph.D., Vydáno 04/2024, ID pověření akreditace: AKP/ČR/ZL/ŠA/002/2024</li>
+    <li>Minnesota Multiphasic Personality Inventory‑2 (MMPI‑2) — Institut klinické psychologie z.s., Vydáno 02/2024, č.j. MZDR 190032019/4/ONP</li>
+    <li>Kroměřížský kurz hypnózy 1 — Česká psychiatrická společnost J.E. Purkyně, Vydáno 10/2023, ID pověření akreditace: AKP ČR/ZL/ŠA/005/2023</li>
+    <li>Tomal 2, Tomal SE</li>
+  </ul>
+
+  <h5>Další kurzy a osvědčení</h5>
+  <ul>
+    <li>Propsyco s.r.o., Vydáno 10/2022, ID pověření akreditace: AKP ČR/ZL/ŠA/007/2022</li>
+    <li>Psycholog ve zdravotnictví — Univerzita Palackého v Olomouci, Vydáno 05/2021, č.j. MZDR 75/2019-5/ONP</li>
+    <li>Kurz kompletní krizové intervence — Děčko Liberec z.s., Vydáno 06/2018 (certifikát bude dohledán)</li>
+    <li>Kurz kresby postavy — Zdeněk Altman, Vydáno 11/2018</li>
+    <li>Poruchy chování I.–II. — PhDr. Andrej Drbohlav, Vydáno 03/2018</li>
+    <li>Letní trenérská škola ČASP — efektivní vzdělávání a soft skills, ČASP, z.s., Vydáno 08/2017</li>
+    <li>Základy psychoonkologie — Amelie, z.s., Vydáno 11/2016</li>
+    <li>a další…</li>
+  </ul>
+
+  <h4>Pracovní zkušenosti</h4>
+  <p><strong>Klinická psychologie Zlín s.r.o.</strong><br>Psycholog ve zdravotnictví — diagnostika a terapie (09/2022 – dosud)</p>
+
+  <p>Absolvovala jsem odborné stáže ve zdravotnických zařízeních: Fakultní nemocnice Hradec Králové, Fakultní nemocnice Olomouc, Vojenská nemocnice v Olomouci, Psychiatrická nemocnice Šternberk, Orlickoústecká nemocnice, ambulance Mgr. Darina Fialová a další.</p>
+
+  <p>Zkušenosti jsem získávala také v rámci dobrovolné činnosti (Projekt SPOLU‑PN Šternberk, Amelie z.s., dobrovolnictví u dětí s autismem a další).</p>
+
+  <p>Ve svém oboru se dále kontinuálně vzdělávám formou supervizí, kurzů, přednášek a odborných konferencí.</p>
+</template>
+
+<!-- Modal pro detail terapie -->
+<div class="modal" id="therapyModal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal-overlay"></div>
+  <div class="modal-panel" role="document" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <button class="modal-close" aria-label="Zavřít">✕</button>
+    <h3 id="modalTitle"></h3>
+    <div id="modalDesc" class="modal-body"></div>
+  </div>
+</div>
+
+    <script> 
+    (function(){
+      const nav = document.querySelector('.nav');
+      if (!nav) return;
+      let lastScroll = window.pageYOffset || document.documentElement.scrollTop;
+      const threshold = 10; // minimalní posun, aby se zabránilo blikání
+
+      window.addEventListener('scroll', function() {
+        const current = window.pageYOffset || document.documentElement.scrollTop;
+        if (Math.abs(current - lastScroll) < threshold) return;
+
+        if (current <= 10) {
+          // nahoře - vždy zobrazit bez stínu
+          nav.classList.remove('nav-hidden');
+          nav.classList.remove('nav--shadow');
+        } else if (current > lastScroll) {
+          // scroll dolů -> schovat
+          nav.classList.add('nav-hidden');
+        } else {
+          // scroll nahoru -> zobrazit a přidat stín
+          nav.classList.remove('nav-hidden');
+          nav.classList.add('nav--shadow');
+        }
+
+        lastScroll = current;
+      }, { passive: true });
+    })();
+    
+    function sendMail(e){
+      e.preventDefault();
+      const form = e.target;
+      const from = form.querySelector('[name="from"]')?.value.trim() || '';
+      const subject = form.querySelector('[name="subject"]')?.value.trim() || '';
+      const bodyText = form.querySelector('[name="body"]')?.value.trim() || '';
+      const msg = form.querySelector('.form-msg');
+      if (!from || !subject || !bodyText) {
+        if (msg) msg.textContent = 'Vyplňte prosím všechna pole.';
+        return false;
+      }
+      const body = encodeURIComponent('Od: ' + from + '\n\n' + bodyText);
+      const mailto = 'mailto:test@test.test?subject=' + encodeURIComponent(subject) + '&body=' + body;
+      // otevře výchozí poštovní klient
+      window.location.href = mailto;
+      if (msg) msg.textContent = 'Po otevření poštovního klienta dokončete odeslání.';
+      form.reset();
+      return false;
+    }
+
+    // Accordion chat-style FAQ
+    (function(){
+      const accordions = document.querySelectorAll('.accordion .card');
+      if (!accordions.length) return;
+      accordions.forEach(card => {
+        const btn = card.querySelector('.toggle');
+        const panel = card.querySelector('.panel');
+
+        btn.addEventListener('click', () => {
+          const isOpen = card.classList.contains('open');
+
+          // close other open cards
+          document.querySelectorAll('.accordion .card.open').forEach(openCard => {
+            if (openCard === card) return;
+            openCard.classList.remove('open');
+            openCard.querySelector('.toggle').setAttribute('aria-expanded','false');
+            openCard.querySelector('.panel').style.maxHeight = null;
+          });
+
+          if (isOpen) {
+            card.classList.remove('open');
+            btn.setAttribute('aria-expanded','false');
+            panel.style.maxHeight = null;
+          } else {
+            card.classList.add('open');
+            btn.setAttribute('aria-expanded','true');
+            panel.style.maxHeight = panel.scrollHeight + 'px';
+          }
+        });
+
+        // reset
+        panel.style.maxHeight = null;
+      });
+    })();
+
+    // Modal: detail terapie
+    (function(){
+      const modal = document.getElementById('therapyModal');
+      if (!modal) return;
+      const overlay = modal.querySelector('.modal-overlay');
+      const panel = modal.querySelector('.modal-panel');
+      const titleEl = modal.querySelector('#modalTitle');
+      const descEl = modal.querySelector('#modalDesc');
+      const closeBtn = modal.querySelector('.modal-close');
+      let lastFocus = null;
+
+      let lastTrigger = null;
+      function openModal(title, html, trigger) {
+        titleEl.textContent = title || '';
+        descEl.innerHTML = '<div class="chat-bubble">' + (html || '') + '</div>';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
+        lastFocus = document.activeElement;
+        if (trigger && trigger.setAttribute) {
+          try { trigger.setAttribute('aria-expanded','true'); } catch(e){}
+          lastTrigger = trigger;
+        }
+        closeBtn.focus();
+      }
+      function closeModal() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+        if (lastTrigger && lastTrigger.setAttribute) {
+          try { lastTrigger.setAttribute('aria-expanded','false'); } catch(e){}
+        }
+        lastTrigger = null;
+        if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+      }
+
+      document.querySelectorAll('[data-template]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const title = btn.getAttribute('data-title') || '';
+          const tpl = btn.getAttribute('data-template');
+          let content = '';
+          if (tpl) {
+            const template = document.getElementById(tpl);
+            content = template ? template.innerHTML : '';
+          } else {
+            content = btn.getAttribute('data-content') || '';
+          }
+          openModal(title, content, btn);
+        });
+      });
+
+      closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', closeModal);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+      });
+    })();
+    </script>
+
+</body>
+</html>
