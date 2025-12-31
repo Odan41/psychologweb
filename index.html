@@ -671,6 +671,7 @@
       .nav-links li a { display:block; padding: 0.75rem 0.5rem; width:100%; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -1007,8 +1008,12 @@ Platba za sezení probíhá předem, nejpozději 24 hodin před domluveným term
         <h3>✉️ Napište mi</h3>
         <form id="contactForm" class="contact-form" onsubmit="return sendMail(event)" novalidate>
           <label>
+            <span style="display:block;font-size:0.9rem;margin-bottom:0.35rem;color:var(--text-muted)">Vaše jméno</span>
+            <input type="text" name="name" required placeholder="Vaše jméno" />
+          </label>
+          <label>
             <span style="display:block;font-size:0.9rem;margin-bottom:0.35rem;color:var(--text-muted)">Váš e‑mail</span>
-            <input type="email" name="from" required placeholder="vaše@email.cz" />
+            <input type="email" name="email" required placeholder="vaše@email.cz" />
           </label>
           <label>
             <span style="display:block;font-size:0.9rem;margin-bottom:0.35rem;color:var(--text-muted)">Předmět</span>
@@ -1334,25 +1339,38 @@ Provozuji odborné psychologické služby jako fyzická osoba podnikající na z
       });
     })();
 
-    function sendMail(e){
-      e.preventDefault();
-      const form = e.target;
-      const from = form.querySelector('[name="from"]')?.value.trim() || '';
-      const subject = form.querySelector('[name="subject"]')?.value.trim() || '';
-      const bodyText = form.querySelector('[name="body"]')?.value.trim() || '';
-      const msg = form.querySelector('.form-msg');
-      if (!from || !subject || !bodyText) {
-        if (msg) msg.textContent = 'Vyplňte prosím všechna pole.';
-        return false;
-      }
-      const body = encodeURIComponent('Od: ' + from + '\n\n' + bodyText);
-      const mailto = 'mailto:test@test.test?subject=' + encodeURIComponent(subject) + '&body=' + body;
-      // otevře výchozí poštovní klient
-      window.location.href = mailto;
-      if (msg) msg.textContent = 'Po otevření poštovního klienta dokončete odeslání.';
-      form.reset();
-      return false;
+    emailjs.init("V7sDfXyq8xXh5XBzV");
+
+  function sendMail(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const email = form.email.value.trim();
+    const name = form.name.value.trim();
+    const subject = form.subject.value.trim();
+    const message = form.body.value.trim();
+    const msg = form.querySelector('.form-msg');
+
+    if (!name || !email || !subject || !message) {
+      msg.textContent = 'Vyplňte prosím všechna pole.';
+      return;
     }
+
+    emailjs.send("service_8n1ki5s", "template_k9um01b", {
+      name: name,
+      email: email,
+      subject: subject,
+      message: message
+    })
+    .then(() => {
+      msg.textContent = 'Zpráva byla odeslána ✅';
+      form.reset();
+    })
+    .catch(err => {
+      msg.textContent = 'Chyba při odesílání ❌';
+      console.error(err);
+    });
+  }
 
     // Accordion chat-style FAQ
     (function(){
