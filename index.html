@@ -688,6 +688,59 @@
       .nav-links li a { display:block; padding: 0.75rem 0.5rem; width:100%; }
     }
   </style>
+  <style>
+    /* Info panel přichycený k dolní části, lehce průhledný a zablurovaný */
+    .info-panel {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10010;
+      pointer-events: auto;
+    }
+    .info-panel__inner {
+      width: min(980px, calc(100% - 28px));
+      background: rgba(255,255,255,0.2);
+      color: var(--text-main);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(31,31,31,0.06);
+      box-shadow: 0 10px 30px rgba(31,31,31,0.12);
+      border-radius: 12px;
+      padding: 0.7rem 1rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      transform: translateY(0);
+      opacity: 1;
+      transition: transform 300ms ease, opacity 240ms ease;
+      font-size: 0.98rem;
+    }
+    .info-panel__text { color: var(--text-main); margin: 0; padding-right: 0.5rem; }
+    .info-panel__close {
+      background: transparent;
+      border: 0;
+      color: var(--text-main);
+      font-size: 1.05rem;
+      padding: 0.35rem 0.45rem;
+      border-radius: 8px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .info-panel__close:focus { outline: 3px solid rgba(159,179,166,0.14); }
+
+    /* Skrytý stav (přesun dolů + průhlednost) */
+    .info-panel--hidden .info-panel__inner { transform: translateY(24px); opacity: 0; pointer-events: none; }
+
+    @media (max-width: 520px) {
+      .info-panel__inner { padding: 0.6rem 0.8rem; font-size: 0.92rem; border-radius: 10px; }
+      .info-panel { bottom: 12px; }
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script type="application/ld+json">
   {
@@ -1051,10 +1104,10 @@ Platba za sezení probíhá předem, nejpozději 24 hodin před domluveným term
     <div class="contact-label">✉️ E‑mail</div>
     <p class="contact-value"><a class="email-link" href="mailto:zitkova.le@gmail.com">zitkova.le@gmail.com</a></p>
   </div>
-  <div class="contact-item">
+  <!-- <div class="contact-item">
     <div class="contact-label">📞 Telefon</div>
     <p class="contact-value"><a class="phone-link" href="tel:+420607073067">+420 607 073 067</a></p>
-  </div>
+  </div> -->
 </div>
       </div>
 
@@ -1529,6 +1582,46 @@ Provozuji odborné psychologické služby jako fyzická osoba podnikající na z
       });
     })();
     </script>
+
+<!-- Dolní info panel -->
+<div class="info-panel" id="siteInfoPanel" role="region" aria-label="Informace">
+  <div class="info-panel__inner" role="status">
+    <p class="info-panel__text">Z kapacitních důvodů momentálně nepřijímám nové klienty. V případě uvolnění kapacity Vás budu kontaktovat. Děkuji za Váš zájem.</p>
+    <button class="info-panel__close" id="infoPanelClose" aria-label="Zavřít informaci">✕</button>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const panelWrap = document.getElementById('siteInfoPanel');
+    const closeBtn = document.getElementById('infoPanelClose');
+    const storageKey = 'lenka_info_panel_closed_v1';
+
+    function hidePanel(persist){
+      if (!panelWrap) return;
+      panelWrap.classList.add('info-panel--hidden');
+      if (persist) try { localStorage.setItem(storageKey, '1'); } catch(e){}
+    }
+    function showPanel(){
+      if (!panelWrap) return;
+      panelWrap.classList.remove('info-panel--hidden');
+    }
+
+    // Inicializace: pokud už bylo zavřeno, neukazovat
+    try {
+      if (localStorage.getItem(storageKey) === '1') {
+        hidePanel(false);
+      }
+    } catch(e){}
+
+    if (closeBtn) closeBtn.addEventListener('click', function(){ hidePanel(true); });
+
+    // Allow Esc to close when focused
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') hidePanel(true);
+    });
+  })();
+</script>
 
 </body>
 </html>
