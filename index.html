@@ -1586,7 +1586,7 @@ Provozuji odborné psychologické služby jako fyzická osoba podnikající na z
 <!-- Dolní info panel -->
 <div class="info-panel" id="siteInfoPanel" role="region" aria-label="Informace">
   <div class="info-panel__inner" role="status">
-    <p class="info-panel__text">Z kapacitních důvodů momentálně nepřijímám nové klienty. V případě uvolnění kapacity Vás budu kontaktovat. Děkuji za Váš zájem.</p>
+    <p class="info-panel__text">Z kapacitních důvodů momentálně nepřijímám nové klienty. Děkuji za Váš zájem.</p>
     <button class="info-panel__close" id="infoPanelClose" aria-label="Zavřít informaci">✕</button>
   </div>
 </div>
@@ -1597,22 +1597,30 @@ Provozuji odborné psychologické služby jako fyzická osoba podnikající na z
     const closeBtn = document.getElementById('infoPanelClose');
     const storageKey = 'lenka_info_panel_closed_v1';
 
+    function _todayKey(){
+      const d = new Date();
+      // use date-only string YYYY-MM-DD
+      return d.toISOString().slice(0,10);
+    }
+
     function hidePanel(persist){
       if (!panelWrap) return;
       panelWrap.classList.add('info-panel--hidden');
-      if (persist) try { localStorage.setItem(storageKey, '1'); } catch(e){}
-    }
-    function showPanel(){
-      if (!panelWrap) return;
-      panelWrap.classList.remove('info-panel--hidden');
-    }
-
-    // Inicializace: pokud už bylo zavřeno, neukazovat
-    try {
-      if (localStorage.getItem(storageKey) === '1') {
-        hidePanel(false);
+      if (persist) {
+        try { localStorage.setItem(storageKey, _todayKey()); } catch(e){}
       }
-    } catch(e){}
+    }
+    function showPanel(){ if (!panelWrap) return; panelWrap.classList.remove('info-panel--hidden'); }
+
+    // Inicializace: pokud bylo zavřeno dnes, NEOZRAZOVAT; jinak ukázat
+    try {
+      const closedDate = localStorage.getItem(storageKey);
+      if (closedDate === _todayKey()) {
+        hidePanel(false);
+      } else {
+        showPanel();
+      }
+    } catch(e){ showPanel(); }
 
     if (closeBtn) closeBtn.addEventListener('click', function(){ hidePanel(true); });
 
